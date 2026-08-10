@@ -31,6 +31,7 @@ function createServer() {
         links: z.boolean().optional().describe('是否保留链接(默认 true)'),
         header: z.boolean().optional().describe('是否添加来源说明(默认 true)'),
         engine: z.enum(['auto', 'jsdom', 'playwright']).optional().describe('转换引擎(auto=jsdom 优先,结果可疑时自动升级 playwright;playwright 需另行安装)'),
+        waitUntil: z.enum(['load', 'domcontentloaded', 'networkidle', 'commit']).optional().describe('页面加载等待策略(playwright 引擎用,默认 load)'),
         timeoutMs: z.number().optional().describe('抓取超时毫秒数(默认 20000)')
       }
     },
@@ -42,6 +43,7 @@ function createServer() {
           links: args.links,
           header: args.header,
           engine: args.engine,
+          waitUntil: args.waitUntil,
           timeoutMs: args.timeoutMs
         });
         if (!res.ok) return resultText('转换失败:' + res.error, true);

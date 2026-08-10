@@ -35,7 +35,7 @@ async function convertUrlWithPlaywright(url, opts) {
     });
     const page = await context.newPage();
     if (opts.timeoutMs) page.setDefaultTimeout(opts.timeoutMs);
-    await page.goto(url, { waitUntil: 'load', timeout: opts.timeoutMs || 30000 });
+    await page.goto(url, { waitUntil: opts.waitUntil || 'load', timeout: opts.timeoutMs || 30000 });
 
     await page.addScriptTag({ path: path.join(LIB_DIR, 'turndown.js') });
     await page.addScriptTag({ path: path.join(LIB_DIR, 'turndown-plugin-gfm.js') });

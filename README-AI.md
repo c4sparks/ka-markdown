@@ -37,6 +37,7 @@ ka https://example.com/               # 之后任意目录可用
 ```bash
 ka <url>                      # 转好的 Markdown 打到 stdout(可管道)
 ka <url> -o article.md        # 输出到文件
+ka mcp                        # 启动 MCP server(stdin/stdout)
 cat urls.txt | ka --batch -d ./out   # 批量:每行一个 URL,# 开头为注释
 ka <url> --engine playwright  # 需要 JS 渲染的页面(需先装 playwright)
 ka <本地.html文件>             # 也可直接转本地 HTML 文件
@@ -51,8 +52,10 @@ ka <本地.html文件>             # 也可直接转本地 HTML 文件
 | `--no-links` | 不保留链接(只留文字) |
 | `--no-header` | 不添加来源说明 |
 | `--engine auto\|jsdom\|playwright` | 转换引擎(auto=jsdom 优先、可疑时自动升级,默认) |
+| `--base-url <url>` | 本地 HTML 文件转换时的基准地址(默认 `file://` 当前文件路径) |
+| `--wait-until <load\|networkidle\|domcontentloaded\|commit>` | Playwright 引擎页面加载等待策略(默认 load) |
 | `-o, --output <file>` | 输出到文件 |
-| `-d, --dir <dir>` | 批量输出目录 |
+| `-d, --dir <dir>` | 批量输出目录(文件名带秒级时间戳,同标题不覆盖) |
 | `--batch` | 批量模式(也自动从 stdin 识别) |
 | `--timeout <ms>` | 抓取超时(默认 20000) |
 | `-v, --version` / `-h, --help` | 版本 / 帮助 |

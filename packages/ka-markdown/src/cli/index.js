@@ -11,6 +11,7 @@ const USAGE = [
   '',
   '用法:',
   '  ka <url|html文件> [选项]       转换单个页面,Markdown 输出到 stdout',
+  '  ka mcp                    启动 MCP server(stdin/stdout)',
   '  cat urls.txt | ka --batch      批量转换(stdin 每行一个 URL,# 开头为注释)',
   '  ka <url> -o out.md             输出到文件',
   '',
@@ -20,6 +21,8 @@ const USAGE = [
   '  --no-links            不保留链接(只留文字)',
   '  --no-header           不添加来源说明',
   '  --engine <auto|jsdom|playwright>  转换引擎(auto=jsdom 优先,结果可疑时自动升级 playwright;playwright 需另行安装)',
+  '  --base-url <url>      本地 HTML 文件转换时的基准地址(默认 file:// 当前文件路径)',
+  '  --wait-until <load|networkidle|domcontentloaded|commit>  Playwright 引擎页面加载等待策略(默认 load)',
   '  -o, --output <file>   输出到文件(默认 stdout)',
   '  -d, --dir <dir>       批量模式输出目录(默认当前目录)',
   '  --batch               批量模式',
@@ -37,6 +40,8 @@ function parseArgs(argv) {
     links: true,
     header: true,
     engine: 'auto',
+    baseUrl: null,
+    waitUntil: 'load',
     timeoutMs: 20000,
     quiet: false,
     batch: false,
@@ -56,6 +61,8 @@ function parseArgs(argv) {
       case '--scope': opts.scope = argv[++i] || 'main'; break;
       case '--engine': opts.engine = argv[++i] || 'jsdom'; break;
       case '--timeout': opts.timeoutMs = Number(argv[++i]) || 20000; break;
+      case '--base-url': opts.baseUrl = argv[++i]; break;
+      case '--wait-until': opts.waitUntil = argv[++i] || 'load'; break;
       case '-o': case '--output': opts.output = argv[++i]; break;
       case '-d': case '--dir': opts.dir = argv[++i]; break;
       default:
@@ -65,6 +72,8 @@ function parseArgs(argv) {
   }
   if (opts.scope !== 'main' && opts.scope !== 'page') opts.error = 'scope 只支持 main / page';
   if (opts.engine !== 'auto' && opts.engine !== 'jsdom' && opts.engine !== 'playwright') opts.error = 'engine 只支持 auto / jsdom / playwright';
+  var WAIT_UNTIL = ['load', 'domcontentloaded', 'networkidle', 'commit'];
+  if (WAIT_UNTIL.indexOf(opts.waitUntil) < 0) opts.error = 'wait-until 只支持 ' + WAIT_UNTIL.join(' / ');
   return opts;
 }
 
@@ -86,7 +95,8 @@ async function convertOne(target, opts) {
     links: opts.links,
     header: opts.header,
     engine: opts.engine,
-    timeoutMs: opts.timeoutMs
+    timeoutMs: opts.timeoutMs,
+    waitUntil: opts.waitUntil
   });
 }
 
@@ -104,7 +114,16 @@ function collectStdin() {
 }
 
 async function run() {
-  const opts = parseArgs(process.argv.slice(2));
+  const argv = process.argv.slice(2);
+
+  // ka mcp 子命令:启动 MCP server(stdin/stdout,持续运行)
+  if (argv.length === 1 && argv[0] === 'mcp') {
+    const { main } = require('../mcp/server');
+    await main();
+    return 0;
+  }
+
+  const opts = parseArgs(argv);
 
   if (opts.help) { process.stdout.write(USAGE); return 0; }
   if (opts.version) { process.stdout.write('ka-markdown ' + pkg.version + '\n'); return 0; }
@@ -134,7 +153,7 @@ async function run() {
         log(opts, '[' + (i + 1) + '/' + lines.length + '] ' + target);
         const res = await convertOne(target, opts);
         if (!res.ok) { failCount++; log(opts, '  失败:' + res.error); continue; }
-        const fname = sanitizeFilename(res.title) + '.md';
+        const fname = downloadFilename(res.title);
         const fpath = path.join(outDir, fname);
         fs.writeFileSync(fpath, res.markdown, 'utf8');
         okCount++;
@@ -182,4 +201,13 @@ function sanitizeFilename(name) {
     .slice(0, 80) || 'page';
 }
 
-module.exports = { run, parseArgs, sanitizeFilename };
+// 批量文件名:标题-YYYYMMDD-HHmmss.md,时间戳到秒,避免同标题覆盖
+function downloadFilename(title) {
+  const d = new Date();
+  const pad = function (n) { return String(n).padStart(2, '0'); };
+  const ts = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) +
+    '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds());
+  return sanitizeFilename(title) + '-' + ts + '.md';
+}
+
+module.exports = { run, parseArgs, sanitizeFilename, downloadFilename };
