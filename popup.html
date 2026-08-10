@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="color-scheme" content="light dark">
+  <title>Ka - 网页转Markdown</title>
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="bar">
+    <span class="brand">Ka - 网页转Markdown</span>
+    <span id="status" class="status">…</span>
+    <button id="help" class="icon-btn" title="操作手册">❓</button>
+    <button id="settings" class="icon-btn" title="设置">⚙</button>
+  </header>
+
+  <div class="options">
+    <label class="radio"><input type="radio" name="scope" value="main" checked> 主要内容</label>
+    <label class="radio"><input type="radio" name="scope" value="page"> 整个页面</label>
+    <button id="reconvert" class="link-btn" title="重新转换">⟳ 重新转换</button>
+  </div>
+
+  <div class="page-title-row">
+    <div id="pageTitle" class="page-title" title=""></div>
+    <div class="view-switch" role="group" aria-label="视图切换">
+      <button id="view-preview" class="view-btn" title="渲染后的效果">👁 预览</button>
+      <button id="view-edit" class="view-btn active" title="Markdown 原文">✏ 编辑</button>
+    </div>
+  </div>
+
+  <div id="md-wrap" class="md-wrap" data-view="edit">
+    <textarea id="markdown" class="md" spellcheck="false" placeholder="转换结果会显示在这里，可直接编辑…"></textarea>
+    <iframe id="preview" class="preview" title="Markdown 预览"></iframe>
+  </div>
+
+  <footer class="actions">
+    <button id="copy" class="btn">📋 复制</button>
+    <button id="download" class="btn primary">⬇ 下载</button>
+    <button id="region" class="btn" title="在页面上点击要转换的区域">⬚ 区域转换</button>
+    <button id="editor" class="btn">✏️ 全屏编辑</button>
+  </footer>
+
+  <script src="lib/marked.min.js"></script>
+  <script src="preview.js"></script>
+  <script src="shared.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

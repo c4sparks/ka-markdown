@@ -1,0 +1,159 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  width: 500px;
+  min-height: 560px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font: 13px/1.5 "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+.brand { font-weight: 600; }
+.status { color: var(--text-dim); font-size: 12px; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.status.ok { color: var(--ok); }
+.status.err { color: var(--err); }
+.icon-btn {
+  margin-left: auto;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 14px;
+  /* 固定尺寸方框：⚙ 和 ❓ 两个按钮外框一样宽高 */
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.icon-btn:hover { background: var(--panel-2); }
+/* 顶栏右侧的 ❓ / ⚙ 挨紧一点（默认 gap 10px，这里再收 6px） */
+.icon-btn + .icon-btn { margin-left: -6px; }
+/* 设置按钮图标更明显一点：放大 + 图标用主色；
+   边框保持和其他图标按钮一致（浅色下也不会被悬停效果冲掉） */
+#settings {
+  font-size: 16px;
+  color: var(--accent);
+}
+
+.md.hidden { display: none; }
+
+.options {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-2);
+}
+.radio { display: flex; align-items: center; gap: 5px; cursor: pointer; user-select: none; }
+.link-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 12px;
+}
+.link-btn:hover { text-decoration: underline; }
+
+.page-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 0;
+}
+.page-title {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-dim);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.view-switch {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.view-btn {
+  padding: 3px 10px;
+  border: none;
+  background: var(--panel-2);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 12px;
+}
+.view-btn + .view-btn { border-left: 1px solid var(--border); }
+.view-btn:hover { color: var(--text); }
+.view-btn.active { background: var(--accent); color: #fff; font-weight: 600; }
+
+.md-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 10px;
+  margin: 8px 14px;
+}
+.md-wrap .md {
+  flex: 1;
+  margin: 0;
+  min-height: 320px;
+  resize: none;
+  padding: 10px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font: 12px/1.55 "Cascadia Code", Consolas, "Microsoft YaHei Mono", monospace;
+  outline: none;
+}
+.md-wrap .md:focus { border-color: var(--accent); }
+.md-wrap .preview {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+}
+.md-wrap[data-view="preview"] .md { display: none; }
+.md-wrap[data-view="edit"] .preview { display: none; }
+
+.actions {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+}
+.btn {
+  flex: 1;
+  padding: 7px 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel-2);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+  transition: filter .12s;
+}
+.btn:hover { filter: brightness(1.15); }
+.btn:active { filter: brightness(.92); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }

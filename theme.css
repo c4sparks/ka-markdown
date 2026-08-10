@@ -1,0 +1,34 @@
+/* 扩展界面（弹窗 / 编辑器外壳）共用的主题变量。
+ *
+ * 跟随系统深浅色：浅色为默认，深色由 prefers-color-scheme 切换。
+ * 改主题颜色只需改这一个文件 —— popup.css / editor.css 里的样式都引用这些变量。
+ * 预览区配色不在这里，它跟随源网页，见 preview.js 的 previewCss()。
+ */
+
+:root {
+  color-scheme: light dark;
+  /* 浅色 */
+  --bg: #f6f8fa;
+  --panel: #ffffff;
+  --panel-2: #eef0f3;
+  --border: #d0d7de;
+  --text: #1f2328;
+  --text-dim: #57606a;
+  --accent: #4c8bf5;
+  --ok: #2da44e;
+  --err: #cf222e;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 深色 */
+    --bg: #1e1f26;
+    --panel: #262831;
+    --panel-2: #2d2f3a;
+    --border: #3a3d4a;
+    --text: #e6e7ee;
+    --text-dim: #9aa0b0;
+    --accent: #4c8bf5;
+    --ok: #4cc38a;
+    --err: #f0656b;
+  }
+}

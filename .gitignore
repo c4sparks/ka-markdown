@@ -1,0 +1,22 @@
+# ---- 打包产物与密钥 ----
+*.crx          # 打包出的扩展安装包
+*.pem          
+*.zip
+
+# ---- Python（tools/ 里的测试 / 诊断脚本会生成） ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# ---- tools/ 里临时排查脚本 ----
+tools/diag_images.py
+tools/repro_download.py
+
+# ---- Node ----
+node_modules/
+
+# ---- 系统 / 编辑器杂项 ----
+.DS_Store
+Thumbs.db
+*.log

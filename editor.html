@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="color-scheme" content="light dark">
+  <title>Markdown 编辑器 · Ka - 网页转Markdown</title>
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="editor.css">
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">Ka - 网页转Markdown</span>
+    <nav class="tabs">
+      <button id="tab-editor" class="tab active">单页编辑器</button>
+      <button id="tab-batch" class="tab">批量转换</button>
+      <button id="tab-settings" class="tab">设置</button>
+      <button id="tab-help" class="tab">操作手册</button>
+    </nav>
+  </header>
+
+  <!-- ============ 单页编辑器 ============ -->
+  <main id="panel-editor" class="panel">
+    <div class="toolbar">
+      <div class="scope-group">
+        <label class="radio" title="点击即按「主要内容」转换当前标签页"><input type="radio" name="scope-editor" value="main" checked> 主要内容</label>
+        <label class="radio" title="点击即按「整个页面」转换当前标签页"><input type="radio" name="scope-editor" value="page"> 整个页面</label>
+      </div>
+      <button id="convert-current" class="btn" title="用当前选中的范围重新抓取当前标签页">⟳ 转换当前标签页</button>
+      <!-- 状态文字放在中间的可伸缩区域：长短变化不影响右侧按钮位置 -->
+      <span id="status-editor" class="status"></span>
+      <div class="view-switch" role="group" aria-label="视图切换">
+        <button id="view-preview" class="view-btn" title="渲染后的效果">👁 预览</button>
+        <button id="view-split" class="view-btn" title="左编辑右预览">分屏</button>
+        <button id="view-edit" class="view-btn active" title="编辑 Markdown 原文">✏ 编辑</button>
+      </div>
+      <button id="copy-editor" class="btn">📋 复制</button>
+      <button id="download-editor" class="btn primary">⬇ 下载</button>
+    </div>
+    <div id="editor-wrap" class="editor-wrap" data-view="edit">
+      <textarea id="md-editor" class="md" spellcheck="false"
+        placeholder="把转换结果粘贴到这里编辑，或点顶部「主要内容 / 整个页面」直接抓取当前页面。&#10;点「预览」可查看渲染效果，改完再复制 / 下载。"></textarea>
+      <iframe id="md-preview" class="preview" title="Markdown 预览"></iframe>
+    </div>
+  </main>
+
+  <!-- ============ 批量转换 ============ -->
+  <main id="panel-batch" class="panel hidden">
+    <div class="batch-row">
+      <div class="batch-setup">
+        <label class="field">
+          <span>基地址（可选，每行不是完整 URL 时自动拼接）</span>
+          <input id="batch-base" type="text" placeholder="https://example.com/docs"
+                 spellcheck="false">
+        </label>
+        <label class="field grow">
+          <span>网址列表（每行一个，<code>#</code> 开头为注释）</span>
+          <textarea id="batch-urls" class="md" spellcheck="false" placeholder="https://example.com/docs/page1&#10;https://example.com/docs/page2&#10;# 这是一行注释，会被忽略"></textarea>
+        </label>
+        <div class="scope-group">
+          <label class="radio"><input type="radio" name="scope-batch" value="main" checked> 主要内容</label>
+          <label class="radio"><input type="radio" name="scope-batch" value="page"> 整个页面</label>
+        </div>
+      </div>
+      <div class="batch-control">
+        <button id="batch-start" class="btn primary big">▶ 开始批量转换</button>
+        <button id="batch-stop" class="btn big" disabled>⏹ 停止</button>
+        <div class="progress">
+          <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        <div id="progress-label" class="progress-label">0 / 0</div>
+      </div>
+    </div>
+    <div id="batch-log" class="log"></div>
+  </main>
+
+  <!-- ============ 设置 ============ -->
+  <main id="panel-settings" class="panel hidden">
+    <div class="settings-card">
+      <div class="settings-title">转换选项</div>
+      <div class="settings-desc">配置 HTML 内容的处理和格式化方式</div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">转换内容</div>
+        <div class="settings-group-desc">决定哪些内容进入 Markdown</div>
+        <label class="setting">
+          <input type="checkbox" id="opt-images">
+          <span class="setting-body">
+            <span class="setting-name">包含图片</span>
+            <span class="setting-hint">在转换结果中保留页面图片</span>
+          </span>
+        </label>
+        <label class="setting">
+          <input type="checkbox" id="opt-links">
+          <span class="setting-body">
+            <span class="setting-name">包含链接</span>
+            <span class="setting-hint">链接保留为「[文字](地址)」形式</span>
+          </span>
+        </label>
+        <label class="setting">
+          <input type="checkbox" id="opt-header">
+          <span class="setting-body">
+            <span class="setting-name">添加来源说明</span>
+            <span class="setting-hint">在开头附上页面标题与来源地址</span>
+          </span>
+        </label>
+      </div>
+
+      <div class="settings-sep"></div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">转换后行为</div>
+        <div class="settings-group-desc">转换完成后自动执行的操作</div>
+        <label class="setting">
+          <input type="checkbox" id="opt-autocopy">
+          <span class="setting-body">
+            <span class="setting-name">自动复制到剪贴板</span>
+            <span class="setting-hint">转换完成后自动复制结果</span>
+          </span>
+        </label>
+        <label class="setting">
+          <input type="checkbox" id="opt-autodownload">
+          <span class="setting-body">
+            <span class="setting-name">自动下载</span>
+            <span class="setting-hint">转换完成后自动保存为 .md 文件</span>
+          </span>
+        </label>
+        <label class="setting">
+          <input type="checkbox" id="opt-showpreview">
+          <span class="setting-body">
+            <span class="setting-name">转换后显示预览面板</span>
+            <span class="setting-hint">勾选后转换完成直接展示渲染预览（图片可见），关闭则停留在编辑视图</span>
+          </span>
+        </label>
+      </div>
+
+      <div class="settings-actions">
+        <button id="settings-reset" class="btn">恢复默认</button>
+        <span id="settings-status" class="status"></span>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============ 操作手册 ============ -->
+  <main id="panel-help" class="panel hidden">
+    <div class="help">
+      <h1>操作手册</h1>
+      <p class="help-sub">Ka - 网页转Markdown —— 使用指南</p>
+
+      <section>
+        <h2>① 单页转换（最常用）</h2>
+        <ol>
+          <li>打开想转换的网页，点击浏览器工具栏上的「Ka - 网页转Markdown」图标</li>
+          <li>弹窗会自动把当前页转成 Markdown，结果可直接编辑；右上角可切 <strong>👁 预览 / ✏ 编辑</strong> 查看渲染效果</li>
+          <li>点 <strong>复制</strong> 或 <strong>⬇ 下载</strong> 拿走结果；底部 <strong>全屏编辑</strong> 可换到大编辑器</li>
+          <li>范围可切换「主要内容 / 整个页面」；「⟳ 重新转换」可换范围后重转</li>
+          <li>编辑器工具栏可切换 <strong>👁 预览</strong>（渲染后的效果，图片能直接显示）/ <strong>分屏</strong>（左编辑右预览）/ <strong>✏ 编辑</strong>（Markdown 原文）；在预览 / 分屏下编辑内容，预览会实时跟随更新；勾选设置里的「转换后显示预览面板」后，转换完成会直接进入预览视图</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>② 右键菜单</h2>
+        <p>在任意网页上点右键 →「将本页转换为 Markdown」→ 二级菜单可选「转换主要内容 / 转换整页」，选后自动打开全屏编辑器展示结果。</p>
+      </section>
+
+      <section>
+        <h2>③ 区域转换</h2>
+        <p>只转页面上的某一块内容，有两种方式：</p>
+        <ul>
+          <li><strong>框选文字</strong>：用鼠标选中一段内容 → 右键 →「将选中内容转换为 Markdown」</li>
+          <li><strong>点选区域</strong>：点弹窗的「⬚ 区域转换」→ 回到页面，把鼠标移到要转的区块上（会高亮蓝色框）→ 点击，自动转换该区块；按 <code>Esc</code> 可取消</li>
+        </ul>
+        <p class="help-note">区域转换同样遵循「转换内容」设置（图片 / 链接 / 来源说明）；你明确点选的区域会原样转换，不会自动过滤其中的导航 / 页脚。</p>
+      </section>
+
+      <section>
+        <h2>④ 全屏编辑器</h2>
+        <p>更大的编辑区，方便继续修改、排版；改完再复制 / 下载。也可以把别处的 Markdown 粘贴进来整理。</p>
+        <p>工具栏的「主要内容 / 整个页面」点一下就会按所选范围直接抓取当前标签页——切换范围即自动重新转换；「⟳ 转换当前标签页」可在同一范围下再次转换。</p>
+      </section>
+
+      <section>
+        <h2>⑤ 批量转换</h2>
+        <ol>
+          <li>切到顶部「批量转换」标签</li>
+          <li>在网址列表里每行粘贴一个地址（<code>#</code> 开头的是注释，会跳过）</li>
+          <li>可选填「基地址」：列表里非完整 URL 的行会自动拼接成完整地址</li>
+          <li>选好范围 → 点「▶ 开始批量转换」，每个页面自动转成并下载一个 <code>.md</code> 文件，日志实时显示成功 / 失败</li>
+        </ol>
+        <p class="help-note">首次批量下载时浏览器可能询问「允许多个文件下载」，点「允许」即可，之后不再询问。</p>
+      </section>
+
+      <section>
+        <h2>⑥ 转换设置</h2>
+        <p>「设置」页可配置转换选项，改动即时保存，所有转换入口共用同一套设置：</p>
+        <ul>
+          <li><strong>转换内容</strong>：包含图片 / 包含链接 / 添加来源说明 —— 决定 Markdown 里保留哪些内容</li>
+          <li><strong>转换后行为</strong>：自动复制 / 自动下载 / 显示预览面板 —— 转换完成后的自动操作；其中「显示预览面板」勾选后，转换完直接展示渲染预览，不勾选则停留在编辑视图（随时可用工具栏的「👁 预览」手动查看）</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>常见问题</h2>
+        <ul>
+          <li><code>chrome://</code>、扩展商店等浏览器内部页面无法转换（浏览器安全限制，弹窗会提示）</li>
+          <li>所有转换都在本机完成，不上传任何数据，可离线使用</li>
+          <li>批量下载的 <code>.md</code> 文件名取自网页标题并附加时间戳（如 <code>文章名-20260807-1430.md</code>），非法字符会被自动替换；重复下载同一篇不会重名覆盖</li>
+        </ul>
+      </section>
+    </div>
+  </main>
+
+  <script src="lib/marked.min.js"></script>
+  <script src="preview.js"></script>
+  <script src="shared.js"></script>
+  <script src="editor.js"></script>
+</body>
+</html>
