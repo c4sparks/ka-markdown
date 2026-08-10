@@ -62,12 +62,12 @@ ka <本地.html文件>             # 也可直接转本地 HTML 文件
 
 ## MCP 用法
 
-提供两个工具,供 Claude / Claude Code / Cursor 等 MCP 客户端调用:
+提供两个工具,供 AI 助手等 MCP 客户端调用:
 
 - **convert_url(url, opts)** — 抓取网页并转成干净 Markdown
 - **convert_html(html, opts)** — 把已有 HTML 片段就地转换
 
-本仓库已配置项目级 MCP(`.mcp.json`):启动 Claude Code 后批准即可使用。手动配置:
+本仓库已配置项目级 MCP(`.mcp.json`):启动后批准即可使用。手动配置:
 
 ```json
 {

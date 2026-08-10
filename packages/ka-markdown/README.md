@@ -41,12 +41,12 @@ ka <本地.html文件>             # 也可直接转本地 HTML 文件
 
 ## MCP Server
 
-提供两个工具,供 Claude / Claude Code / Cursor 等客户端调用:
+提供两个工具,供 AI 助手等 MCP 客户端调用:
 
 - `convert_url(url, opts)` — 抓取网页并转成干净 Markdown
 - `convert_html(html, opts)` — 把已有 HTML 片段就地转换
 
-Claude Desktop / Claude Code 配置(发布到 npm 后):
+MCP 客户端配置(发布到 npm 后):
 
 ```json
 {
