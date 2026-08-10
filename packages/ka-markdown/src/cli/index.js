@@ -27,6 +27,8 @@ const USAGE = [
   '  -d, --dir <dir>       批量模式输出目录(默认当前目录)',
   '  --batch               批量模式',
   '  --timeout <ms>        抓取超时毫秒数(默认 20000)',
+  '  --retry <n>           网络暂时性失败时的额外重试次数(默认 0 不重试;单转与批量均生效)',
+  '  --retry-delay <ms>    重试基础间隔毫秒(默认 1000,递增退避 1x/2x/3x)',
   '  -q, --quiet           静默(只输出结果/错误,不打印进度日志)',
   '  -v, --version         显示版本号',
   '  -h, --help            显示帮助',
@@ -43,6 +45,8 @@ function parseArgs(argv) {
     baseUrl: null,
     waitUntil: 'load',
     timeoutMs: 20000,
+    retries: 0,
+    retryDelayMs: 1000,
     quiet: false,
     batch: false,
     urls: [],
@@ -61,6 +65,8 @@ function parseArgs(argv) {
       case '--scope': opts.scope = argv[++i] || 'main'; break;
       case '--engine': opts.engine = argv[++i] || 'jsdom'; break;
       case '--timeout': opts.timeoutMs = Number(argv[++i]) || 20000; break;
+      case '--retry': opts.retries = Number(argv[++i]) || 0; break;
+      case '--retry-delay': opts.retryDelayMs = Number(argv[++i]) || 1000; break;
       case '--base-url': opts.baseUrl = argv[++i]; break;
       case '--wait-until': opts.waitUntil = argv[++i] || 'load'; break;
       case '-o': case '--output': opts.output = argv[++i]; break;
@@ -74,6 +80,8 @@ function parseArgs(argv) {
   if (opts.engine !== 'auto' && opts.engine !== 'jsdom' && opts.engine !== 'playwright') opts.error = 'engine 只支持 auto / jsdom / playwright';
   var WAIT_UNTIL = ['load', 'domcontentloaded', 'networkidle', 'commit'];
   if (WAIT_UNTIL.indexOf(opts.waitUntil) < 0) opts.error = 'wait-until 只支持 ' + WAIT_UNTIL.join(' / ');
+  if (opts.retries < 0) opts.error = 'retry 不能为负数';
+  if (opts.retryDelayMs <= 0) opts.error = 'retry-delay 必须大于 0';
   return opts;
 }
 
@@ -96,7 +104,9 @@ async function convertOne(target, opts) {
     header: opts.header,
     engine: opts.engine,
     timeoutMs: opts.timeoutMs,
-    waitUntil: opts.waitUntil
+    waitUntil: opts.waitUntil,
+    retries: opts.retries,
+    retryDelayMs: opts.retryDelayMs
   });
 }
 

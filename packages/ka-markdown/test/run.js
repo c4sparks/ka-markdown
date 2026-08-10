@@ -68,6 +68,16 @@ async function main() {
     if (a.stderr) process.stderr.write(a.stderr);
     process.exitCode = 1;
   }
+
+  // 4. fetch 重试逻辑(子进程)
+  const f = spawnSync(process.execPath, [path.join(__dirname, 'fetch.test.js')], {
+    encoding: 'utf8'
+  });
+  process.stdout.write(f.stdout);
+  if (f.status !== 0) {
+    if (f.stderr) process.stderr.write(f.stderr);
+    process.exitCode = 1;
+  }
 }
 
 main().catch(function (e) {

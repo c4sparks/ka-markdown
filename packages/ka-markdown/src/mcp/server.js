@@ -32,6 +32,8 @@ function createServer() {
         header: z.boolean().optional().describe('是否添加来源说明(默认 true)'),
         engine: z.enum(['auto', 'jsdom', 'playwright']).optional().describe('转换引擎(auto=jsdom 优先,结果可疑时自动升级 playwright;playwright 需另行安装)'),
         waitUntil: z.enum(['load', 'domcontentloaded', 'networkidle', 'commit']).optional().describe('页面加载等待策略(playwright 引擎用,默认 load)'),
+        retries: z.number().min(0).optional().describe('网络暂时性失败时的额外重试次数(默认 0 不重试)'),
+        retryDelayMs: z.number().min(1).optional().describe('重试基础间隔毫秒(默认 1000,递增退避)'),
         timeoutMs: z.number().optional().describe('抓取超时毫秒数(默认 20000)')
       }
     },
@@ -44,6 +46,8 @@ function createServer() {
           header: args.header,
           engine: args.engine,
           waitUntil: args.waitUntil,
+          retries: args.retries,
+          retryDelayMs: args.retryDelayMs,
           timeoutMs: args.timeoutMs
         });
         if (!res.ok) return resultText('转换失败:' + res.error, true);

@@ -34,6 +34,8 @@ ka <本地.html文件>             # 也可直接转本地 HTML 文件
 | `--engine auto\|jsdom\|playwright` | 转换引擎:auto=jsdom 优先、结果可疑时自动升级 playwright(默认) |
 | `--base-url <url>` | 本地 HTML 文件转换时的基准地址(默认 `file://` 当前文件路径) |
 | `--wait-until <load\|networkidle\|domcontentloaded\|commit>` | Playwright 引擎页面加载等待策略(默认 load) |
+| `--retry <n>` | 网络暂时性失败(超时/5xx/429 等)时的额外重试次数(默认 0 不重试,单转与批量均生效) |
+| `--retry-delay <ms>` | 重试基础间隔毫秒(默认 1000,递增退避) |
 | `-o, --output <file>` | 输出到文件 |
 | `-d, --dir <dir>` | 批量输出目录(文件名带秒级时间戳,同标题不覆盖) |
 | `--batch` | 批量模式(也从 stdin 自动识别) |
