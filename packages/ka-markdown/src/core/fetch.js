@@ -1,7 +1,6 @@
 'use strict';
 
-const DEFAULT_UA =
-  'Mozilla/5.0 (compatible; ka-markdown/0.1.0; +https://github.com/c4sparks/ka-markdown)';
+const DEFAULT_UA = 'Mozilla/5.0 (compatible; ka-markdown/0.1.0)';
 
 /**
  * 抓取页面 HTML(Node 18+ 内置 fetch)。
