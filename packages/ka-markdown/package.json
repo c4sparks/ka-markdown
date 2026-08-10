@@ -29,8 +29,9 @@
     "web-scraping"
   ],
   "dependencies": {
-    "jsdom": "^26.1.0",
     "@modelcontextprotocol/sdk": "^1.0.0",
+    "jsdom": "^26.1.0",
+    "playwright": "^1.62.1",
     "zod": "^4.4.0"
   }
 }
