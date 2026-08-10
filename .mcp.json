@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "ka-markdown": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "packages/ka-markdown/bin/ka-mcp.js"
+      ],
+      "env": {}
+    }
+  }
+}
