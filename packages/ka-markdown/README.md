@@ -29,7 +29,7 @@ ka <url> --engine playwright  # 需要 JS 渲染的页面(需先安装 playwrigh
 | `--no-images` | 不保留图片 |
 | `--no-links` | 不保留链接(只留文字) |
 | `--no-header` | 不添加来源说明 |
-| `--engine jsdom\|playwright` | 转换引擎 |
+| `--engine auto\|jsdom\|playwright` | 转换引擎:auto=jsdom 优先、结果可疑时自动升级 playwright(默认) |
 | `-o, --output <file>` | 输出到文件 |
 | `-d, --dir <dir>` | 批量输出目录 |
 | `--batch` | 批量模式(也从 stdin 自动识别) |
@@ -63,7 +63,7 @@ npx playwright install chromium
 ka <url> --engine playwright
 ```
 
-安装后 `--engine auto`(默认)会在 jsdom 结果可疑时自动升级到 Playwright(规划中)。
+安装后 `--engine auto`(默认)会自动检测:jsdom 结果可疑时(正文过短且 HTML 很大、或检测到 Next/Nuxt/React 等 SPA 标记)升级到 Playwright 重抓;未安装 Playwright 或升级失败时自动回落 jsdom 结果。
 
 ## 开发
 

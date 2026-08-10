@@ -19,7 +19,7 @@ const USAGE = [
   '  --no-images           不保留图片',
   '  --no-links            不保留链接(只留文字)',
   '  --no-header           不添加来源说明',
-  '  --engine <jsdom|playwright>  转换引擎(默认 jsdom;playwright 需另行安装)',
+  '  --engine <auto|jsdom|playwright>  转换引擎(auto=jsdom 优先,结果可疑时自动升级 playwright;playwright 需另行安装)',
   '  -o, --output <file>   输出到文件(默认 stdout)',
   '  -d, --dir <dir>       批量模式输出目录(默认当前目录)',
   '  --batch               批量模式',
@@ -36,7 +36,7 @@ function parseArgs(argv) {
     images: true,
     links: true,
     header: true,
-    engine: 'jsdom',
+    engine: 'auto',
     timeoutMs: 20000,
     quiet: false,
     batch: false,
@@ -64,7 +64,7 @@ function parseArgs(argv) {
     }
   }
   if (opts.scope !== 'main' && opts.scope !== 'page') opts.error = 'scope 只支持 main / page';
-  if (opts.engine !== 'jsdom' && opts.engine !== 'playwright') opts.error = 'engine 只支持 jsdom / playwright';
+  if (opts.engine !== 'auto' && opts.engine !== 'jsdom' && opts.engine !== 'playwright') opts.error = 'engine 只支持 auto / jsdom / playwright';
   return opts;
 }
 

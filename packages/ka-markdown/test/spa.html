@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>SPA 示例</title></head>
+<body>
+<div id="root">加载中...</div>
+<script>
+  document.getElementById('root').innerHTML =
+    '<article><h1>JS 渲染的标题</h1><p>这段内容是 JavaScript 动态生成的,jsdom 引擎拿不到。</p></article>';
+  document.title = 'SPA 动态页面';
+</script>
+</body>
+</html>

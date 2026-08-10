@@ -13,7 +13,7 @@ const LIB_DIR = path.join(__dirname, '..', '..', '..', 'lib');
  *
  * @param {string} url
  * @param {object} [opts] { scope, images, links, header, timeoutMs, userAgent }
- * @returns {Promise<object>} { ok, markdown, title, url, error, scope }
+ * @returns {Promise<object>} { ok, markdown, title, url, error, scope, engine }
  */
 async function convertUrlWithPlaywright(url, opts) {
   opts = opts || {};
@@ -25,10 +25,13 @@ async function convertUrlWithPlaywright(url, opts) {
       '未安装 Playwright 引擎。请运行:npm install playwright && npx playwright install chromium'
     );
   }
-  const browser = await pw.chromium.launch({ headless: true });
+
+  let browser = null;
   try {
+    browser = await pw.chromium.launch({ headless: true });
     const context = await browser.newContext({
-      userAgent: opts.userAgent || undefined
+      userAgent: opts.userAgent || undefined,
+      viewport: { width: 1280, height: 900 }
     });
     const page = await context.newPage();
     if (opts.timeoutMs) page.setDefaultTimeout(opts.timeoutMs);
@@ -51,10 +54,28 @@ async function convertUrlWithPlaywright(url, opts) {
       links: opts.links,
       header: opts.header
     });
+    res.engine = 'playwright';
     return res;
+  } catch (e) {
+    return {
+      ok: false,
+      error: (e && e.message) ? e.message : String(e),
+      url: url,
+      engine: 'playwright'
+    };
   } finally {
-    await browser.close();
+    if (browser) await browser.close();
   }
 }
 
-module.exports = { convertUrlWithPlaywright };
+// 检测 playwright 是否已安装(不加载,只查模块解析)
+function isPlaywrightAvailable() {
+  try {
+    require.resolve('playwright');
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+module.exports = { convertUrlWithPlaywright, isPlaywrightAvailable };
