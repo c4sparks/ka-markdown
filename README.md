@@ -44,6 +44,23 @@
 
 重新加载代码后，回到 `chrome://extensions` 点一下扩展卡片上的「刷新」即可。
 
+## 快速开始
+
+无需任何构建工具，克隆下来即可直接加载使用。
+
+1. **获取代码**
+   ```bash
+   git clone https://github.com/c4sparks/ka-markdown.git
+   cd ka-markdown
+   ```
+   不会用 Git 就点仓库页 **Code → Download ZIP** 解压；⚠️ ZIP 解压后记得进入**含 `manifest.json` 的那一层**。
+
+2. **加载扩展**：打开 `chrome://extensions`（Edge 用 `edge://extensions`）→ 右上角开启「开发者模式」→ 点「加载已解压的扩展程序」→ 选择上面那个文件夹 → 确定。工具栏出现「Ka - 网页转Markdown」图标；没看到就点浏览器右上角拼图 🧩 固定。
+
+3. **开始使用**：打开任意网页，点工具栏图标即可转换，具体操作见下方「使用」章节。
+
+4. **更新**：`git pull` 拉取最新代码 → 回到 `chrome://extensions` 点扩展卡片上的「刷新」。
+
 ## 使用
 
 ### 单页转换
